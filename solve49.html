@@ -1,102 +1,110 @@
 <html>
 <head>
-	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script type="text/javascript">
-		
+        
 
-		var points = eval('[{"y":2,"x":1},{"y":0,"x":2},{"y":2,"x":3},{"y":0,"x":4},{"y":2,"x":5},{"y":0,"x":6},{"y":1,"x":4},{"y":3,"x":5},{"y":1,"x":6},{"y":2,"x":4},{"y":0,"x":5},{"y":2,"x":6},{"y":4,"x":5},{"y":6,"x":6},{"y":5,"x":4},{"y":3,"x":3},{"y":1,"x":2},{"y":3,"x":1},{"y":1,"x":0},{"y":2,"x":2},{"y":0,"x":3},{"y":1,"x":5},{"y":3,"x":6},{"y":5,"x":5},{"y":3,"x":4},{"y":1,"x":3},{"y":0,"x":1},{"y":2,"x":0},{"y":4,"x":1},{"y":6,"x":0},{"y":5,"x":2},{"y":4,"x":4},{"y":5,"x":6},{"y":6,"x":4},{"y":4,"x":3},{"y":6,"x":2},{"y":5,"x":0},{"y":4,"x":2},{"y":6,"x":3},{"y":5,"x":1},{"y":3,"x":0},{"y":1,"x":1},{"y":3,"x":2},{"y":4,"x":0},{"y":6,"x":1},{"y":5,"x":3},{"y":6,"x":5}]') 
+    var points = eval('[{"y":2,"x":1},{"y":0,"x":2},{"y":2,"x":3},{"y":0,"x":4},{"y":2,"x":5},{"y":0,"x":6},{"y":1,"x":4},{"y":3,"x":5},{"y":1,"x":6},{"y":2,"x":4},{"y":0,"x":5},{"y":2,"x":6},{"y":4,"x":5},{"y":6,"x":6},{"y":5,"x":4},{"y":3,"x":3},{"y":1,"x":2},{"y":3,"x":1},{"y":1,"x":0},{"y":2,"x":2},{"y":0,"x":3},{"y":1,"x":5},{"y":3,"x":6},{"y":5,"x":5},{"y":3,"x":4},{"y":1,"x":3},{"y":0,"x":1},{"y":2,"x":0},{"y":4,"x":1},{"y":6,"x":0},{"y":5,"x":2},{"y":4,"x":4},{"y":5,"x":6},{"y":6,"x":4},{"y":4,"x":3},{"y":6,"x":2},{"y":5,"x":0},{"y":4,"x":2},{"y":6,"x":3},{"y":5,"x":1},{"y":3,"x":0},{"y":1,"x":1},{"y":3,"x":2},{"y":4,"x":0},{"y":6,"x":1},{"y":5,"x":3},{"y":6,"x":5},{"y":4,"x":6}]') 
 
+    var MAX = 7;
 
-/*
-        function drawGrid() {
-            var cnv = document.getElementById("myCanvas");
+    $(document).ready(function() {
 
-            var gridOptions = {
-                majorLines: {
-                    separation: 30,
-                    color: '#000000'
-                }
-            };
+        buildMatrix();
 
-            drawGridLines(cnv, gridOptions.majorLines);
+    });
 
-            return;
-        }
+    function buildMatrix() {
+        $('#matrix').remove();
 
-        function drawGridLines(cnv, lineOptions) {
+        $('<table id="matrix"/>').appendTo('.display');
 
-
-            var iWidth = 7 * lineOptions.separation;
-            var iHeight = 7 * lineOptions.separation;
-
-            var ctx = cnv.getContext('2d');
-
-            ctx.strokeStyle = lineOptions.color;
-            ctx.strokeWidth = 1;
-
-            ctx.beginPath();
-
-            var iCount = 7;
-            var i = null;
-            var x = null;
-            var y = null;
-
-            for (i = 0; i <= iCount; i++) {
-                x = (i * lineOptions.separation);
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, iHeight);
-                ctx.stroke();
-            }
-
-
+        for (x = 0; x < MAX; x++) {
+            var row = '<tr>';
             
-
-            for (i = 0; i <= iCount; i++) {
-                y = (i * lineOptions.separation);
-                ctx.moveTo(0, y);
-                ctx.lineTo(iWidth, y);
-                ctx.stroke();
+            for (y = 0; y < MAX; y++) {
+                row += '<td><div/></td>';
             }
-
-            ctx.closePath();
-
-            return;
+            
+            $('#matrix').append(row);
         }
-
-
-
-*/
-
-	matrix = []
-
-	for (x = 0; x < 7; x++) {
-		for (y = 0; y < 7; x++) {
-			matrix[x][y] = 0;
-		}
-	}	
-
-	d3.select(".display").data(matrix);
-
-
-
-    function doJumps() {
-    	for (point in points) {
-    		point;
-		}
     }
+
+    function run() {
+
+        buildMatrix();
+        
+        $('#runButton').prop('disabled', true);
+            
+        fadeInCell(0);
+
+    }
+
+
+    function fadeInCell(jump) {
+
+        if (jump < points.length) {
+            var cell = getCell(points[jump]);
+
+            $(cell).html('<div class="jump_' + jump + '">' + (jump + 1) + '</div>');
+            $(cell).toggleClass("jumped");
+            $('.jump_' + jump).hide().fadeIn("slow", function() {
+                fadeInCell(jump + 1);
+            });
+        } else {
+            $('#runButton').prop('disabled', false);
+        }
+    }
+
+    function getCell(point) {
+        var table = document.getElementById('matrix');
+        var row = table.rows[point.y];
+        var cell = row.cells[point.x];
+        return cell;
+    }
+
     </script>
 
+    <style type="text/css">
+
+
+        #matrix {
+            table-layout:fixed;
+        }
+
+        #matrix tr td { 
+            height: 60px;
+            width: 50px;
+            border:solid;
+        }
+        #matrix tr td.jumped {
+            background-color: #E06666;            
+        }
+
+
+        #matrix tr td.jumped div {
+            
+            text-align: center;
+            font-family: Helvetica, Arial, Sans-Serif; 
+            
+        } 
+    </style>
 </head>
 <!--
-<body onload="drawGrid()">
+<body >
 <canvas id="myCanvas" width="1000" height="1000">
 </canvas>
 -->
 <body>
 
-<div class="display"/>
 
+<div class="display"></div>
 
+<div>
+    <p>
+        <button id="runButton" onClick="run();">run</button>
+    </p>
+</div>
 </body>
 
 

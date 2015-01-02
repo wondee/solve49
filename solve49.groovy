@@ -30,8 +30,9 @@ def solve(startPoint) {
 		println "jumps: $jumps"
 		*/
 
+		visited << actPoint
 		if (jumps.empty) {
-			n = visited.size() + 1
+			n = visited.size() 
 			if (max < n) {
 				println "found new max: $n" 
 				new File(ROOT_PATH + ("${MAX}_${n}.out")).write(new JsonBuilder(visited).toString())
@@ -39,7 +40,7 @@ def solve(startPoint) {
 				max = n
 			}
 		} else {
-			visited << actPoint
+			
 			jumps.each {
 				stack << [it, visited.collect()]
 			}
